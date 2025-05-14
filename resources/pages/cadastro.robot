@@ -1,9 +1,5 @@
 *** Settings ***
-Library          SeleniumLibrary
-Library          FakerLibrary    locale=pt_BR
-Resource         setup_teardown.robot
-Test Setup       Dado que eu acesse o Organo
-Test Teardown    Fechar o navegador
+Resource  ../main.robot
 
 *** Variables ***
 ${CAMPO_NOME}      id:form-nome
@@ -21,28 +17,13 @@ ${BOTAO_CARD}      id:form-botao
 ...       //option[contains(.,'Mobile')]
 ...       //option[contains(.,'Inovação')]
 
-*** Test Cases ***
-Verificar se ao preencher corretamente o formulário os dados são inseridos corretamente na lista e se um novo card é criado no time escolhido  
-     Dado que eu preencha os campos do formulário
-     E clique no botão "Criar Card"
-     Então identificar o card no time esperado
-
-Verificar se é possivel criar mais de um card se preenchermos os campos corretamente
-    Dado que eu preencha os campos do formulário
-    E clique no botão "Criar Card"
-    Então identificar 3 cards no time esperado
-
-Verificar se é possível criar um card para cada time se preenchermos os campos corretamente
-    Dado que eu preencha os campos do formulário
-    Então criar card e identificar 1 card em cada time disponível
-
 *** Keywords ***
 Dado que eu preencha os campos do formulário
     ${Nome}          FakerLibrary.First Name
     Input Text       ${CAMPO_NOME}       ${Nome}
     ${Cargo}         FakerLibrary.Job    
     Input Text       ${CAMPO_CARGO}      ${Cargo} 
-    ${Imagem}        FakerLibrary.Image Url    
+    ${Imagem}        FakerLibrary.Image Url    width=200    height=100
     Input Text       ${CAMPO_IMAGEM}     ${Imagem}
     Click Element    ${CAMPO_TIME}
     Click Element    ${selecionar_time}[0]
@@ -69,3 +50,10 @@ Então criar card e identificar 1 card em cada time disponível
     END
     Sleep    10s
 
+Dado que eu clique no botão "Criar Card"
+    Click Element    ${BOTAO_CARD}
+
+Então sistema deve apresentar mensagem de campo obrigatório
+    Element Should Be Visible    id:form-nome-erro
+    Element Should Be Visible    id:form-cargo-erro
+    Element Should Be Visible    id:form-times-erro
